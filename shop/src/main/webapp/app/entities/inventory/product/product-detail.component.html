@@ -1,0 +1,107 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="product">
+            <span class="h4">{{product.name}}</span>
+            <hr>
+            <jhi-alert></jhi-alert>
+            <div class="card">
+                <dl class="row-md jh-entity-details list-group list-group-flush">
+                    <div class="list-group-item">
+                        <p><img [src]="product.image"/></p>
+                    </div>
+                    <div class="list-group-item">
+                        <p class="h6">Description</p>
+                        <dd>
+                            <span *ngIf="product.description">s{{product.description}}</span>
+                            <span *ngIf="!product.description">Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+                                sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+                                voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+                                no sea takimata sanctus est Lorem ipsum dolor sit amet.</span>
+                        </dd>
+                    </div>
+                    <div class="list-group-item">
+                        <p class="h6">Price</p>
+                        <dd>
+                            <span>{{product.price}} €</span>
+                        </dd>
+                    </div>
+                    <div class="list-group-item">
+                        <p class="h6">Category</p>
+                        <dd>
+                            <span>{{product.productCategory.name}}</span>
+                        </dd>
+                    </div>
+                    <div class="list-group-item">
+                        <p class="h6 text-warning"><fa-icon [icon]="'star'"></fa-icon> Rating</p>
+                        <div class="small" *ngIf="ratings">No ratings available</div>
+                        <div *ngIf="ratings.length > 0">{{ currentRating }}/10 ({{ ratings.length }})</div>
+                    </div>
+                    <div class="list-group-item">
+                    <button type="submit"
+                            (click)="previousState()"
+                            class="btn btn-info float-left mr-3">
+                            <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+                    </button>
+                    <button type="button"
+                            (click)="intoBasket(amount, product)"
+                            [disabled]="1 > amount"
+                            class="btn btn-primary float-left">
+                             <fa-icon [icon]="'cart-plus'"></fa-icon>&nbsp;<span> Into Basket ( {{ product.price * amount}} € ) </span>
+                    </button>
+                    <div class="form-group col-sm-2 float-left">
+                        <input type="number" [(ngModel)]="amount" value="1" min="1" class="form-control"/>
+                    </div>
+                    </div>
+                </dl>
+            </div>
+
+            <div *ngFor="let r of ratings">
+                <div class="row mt-5">
+                    <div class="col-1"><img src="https://via.placeholder.com/75?text=User"></div>
+                    <div class="col-1 h6 align-left">
+                        <p>User {{ r.customerId }}</p>
+                        <p class="small">Rated {{ r.points }}/10</p>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col">
+                        <i><p>{{ r.description }}</p></i>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <br>
+            <div *ngIf="!customerRatedAlready">
+                <h3>Rate {{product.name}}</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="points">Points</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" ><fa-icon [icon]="'star'"></span>
+                            </div>
+                            <input type="number" [(ngModel)]="customerPoints" name="cpoints" value="1" min="1" max="10" class="form-control col-sm-1" id="points"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea
+                            [(ngModel)]="customerDesc"
+                            name="cDesc"
+                            (change)="textAreaEmpty()"
+                            class="form-control"
+                            id="description"
+                            rows="3">
+                    </div>
+                    <button
+                            type="submit"
+                            [disabled]="1 > customerPoints || 10 < customerPoints || !ratingSubmitButtonActive"
+                            (click)="rate(customerPoints, customerDesc)"
+                            class="btn btn-primary">Submit
+                    </button>
+                </form>
+            </div>
+            <div *ngIf="customerRatedAlready" class="small">You have already rated this product</div>
+        </div>
+    </div>
+</div>

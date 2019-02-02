@@ -1,0 +1,64 @@
+<div class="row justify-content-center">
+    <div class="col-6">
+        <h2 id="page-heading">
+            <span>My Orders</span>
+        </h2>
+        <jhi-alert></jhi-alert>
+        <br/>
+        <div *ngFor="let c of completeOrders" class="mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">Order date</div>
+                        <div class="col">Total price</div>
+                        <div class="col" style="text-align: right">Order No.</div>
+                    </div>
+                    <div class="row">
+                        <div class="col small">{{ c.orderDate }}</div>
+                        <div class="col small">{{ c.totalPrice }} €</div>
+                        <div class="col small" style="text-align: right">{{ generateOrderNo(c.orderDate) }}</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="card-title h5">Status: {{ c.status }}</div>
+                            <div *ngFor="let o of c.productOrders" class="mb-2">
+                                <div class="row">
+                                    <div class="col-2"><img [src]="getProduct(o.productId).image" style="max-width: 90px"/></div>
+                                    <div class="col-4">
+                                        <p class="h6">{{ o.amount }}x {{ getProduct(o.productId).name }}</p>
+                                        <p class="text-danger h6">{{ getProduct(o.productId).price }} €</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <button type="submit"
+                                    (click)="payNow(c)"
+                                    [disabled]="c.status === 'COMPLETED'"
+                                    class="btn btn-primary btn-block">
+                                    <fa-icon [icon]="'money-bill'"></fa-icon>&nbsp;<span> Pay Now</span>
+                            </button>
+                            <br>
+                            <button type="submit"
+                                    [routerLink]="['/invoice', c.invoiceId, 'view']"
+                                    [disabled]="c.status === 'PENDING'"
+                                    class="btn btn-primary btn-block">
+                                    <fa-icon [icon]="'file-invoice'"></fa-icon>&nbsp;<span> Invoice</span>
+                            </button>
+                            <br>
+                            <button type="submit"
+                                    (click)="hide(c)"
+                                    class="btn btn-warning btn-block">
+                                    <fa-icon [icon]="'eye-slash'"></fa-icon>&nbsp;<span> Hide Order</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="c.status === 'PENDING'"class="card-footer bg-primary"></div>
+                <div *ngIf="c.status === 'COMPLETED'"class="card-footer bg-success"></div>
+            </div>
+        </div>
+    </div>
+</div>
