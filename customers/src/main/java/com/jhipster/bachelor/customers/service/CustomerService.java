@@ -1,6 +1,5 @@
 package com.jhipster.bachelor.customers.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,10 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jhipster.bachelor.customers.domain.Customer;
 import com.jhipster.bachelor.customers.repository.CustomerRepository;
-
-import event.CustomerEvent;
-import event.EventConsumer;
-import event.EventProducer;
 
 /**
  * Service Implementation for managing Customer.
@@ -74,34 +69,5 @@ public class CustomerService {
   public void delete(Long id) {
     log.debug("Request to delete Customer : {}", id);
     customerRepository.deleteById(id);
-  }
-
-  public void addCustomerEvent(CustomerEvent customerEvent) {
-    EventProducer eventProducer = new EventProducer();
-    eventProducer.send(customerEvent);
-  }
-
-  public List<Customer> aggregateCustomerEvents() {
-    EventConsumer eventConsumer = new EventConsumer();
-    log.info("~aggregateCustomerEvents");
-    List<Customer> customerList = new ArrayList<>();
-    List<CustomerEvent> customerEvents = eventConsumer.consume();
-    customerEvents.forEach(event -> {
-      if (event.getEvent().equals("CUSTOMER_CREATED")) {
-        customerList.add(event.getCustomer());
-      }
-      if (event.getEvent().equals("CUSTOMER_DELETED")) {
-        customerList.remove(event.getCustomer());
-      }
-      if (event.getEvent().equals("CUSTOMER_UPDATED")) {
-        for (int i = 0; i < customerList.size(); i++ ) {
-          if (customerList.get(i).getId().equals(event.getCustomer().getId())) {
-            customerList.set(i, event.getCustomer());
-          }
-        }
-      }
-    });
-
-    return customerList;
   }
 }

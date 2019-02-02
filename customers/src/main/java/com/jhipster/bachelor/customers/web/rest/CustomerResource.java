@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,6 @@ import com.jhipster.bachelor.customers.service.CustomerService;
 import com.jhipster.bachelor.customers.web.rest.errors.BadRequestAlertException;
 import com.jhipster.bachelor.customers.web.rest.util.HeaderUtil;
 
-import event.CustomerEvent;
 import io.github.jhipster.web.util.ResponseUtil;
 
 /**
@@ -42,17 +40,6 @@ public class CustomerResource {
 
   public CustomerResource(CustomerService customerService) {
     this.customerService = customerService;
-  }
-
-  @PostMapping("/events/{event}")
-  @Timed
-  public ResponseEntity<Object> addCustomerEvent(@RequestBody Customer customer, @PathVariable("event") String event) throws Exception {
-    if ("CUSTOMER_DELETED".equals(event) || "CUSTOMER_UPDATED".equals(event) || "CUSTOMER_CREATED".equals(event)) {
-      customerService.addCustomerEvent(new CustomerEvent(customer, event));
-    } else
-      throw new Exception("Unknown Event");
-    return new ResponseEntity<>(HttpStatus.OK);
-
   }
 
   /**
@@ -105,7 +92,7 @@ public class CustomerResource {
   @Timed
   public List<Customer> getAllCustomers() throws InterruptedException, ExecutionException {
     log.debug("REST request to get all Customers");
-    return customerService.aggregateCustomerEvents();
+    return customerService.findAll();
   }
 
   /**

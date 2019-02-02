@@ -1,4 +1,3 @@
-import { CustomerEventType } from './../../../shared/model/customers/customer-eventType';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
@@ -6,7 +5,6 @@ import { Observable } from 'rxjs';
 
 import { ICustomer } from 'app/shared/model/customers/customer.model';
 import { CustomerService } from './customer.service';
-import { CustomerEvent } from 'app/shared/model/customers/customer-event.model';
 
 @Component({
     selector: 'jhi-customer-update',
@@ -15,7 +13,6 @@ import { CustomerEvent } from 'app/shared/model/customers/customer-event.model';
 export class CustomerUpdateComponent implements OnInit {
     customer: ICustomer;
     isSaving: boolean;
-    customerEvent: CustomerEvent;
 
     constructor(private customerService: CustomerService, private activatedRoute: ActivatedRoute) {}
 
@@ -33,10 +30,9 @@ export class CustomerUpdateComponent implements OnInit {
     save() {
         this.isSaving = true;
         if (this.customer.id !== undefined) {
-            this.subscribeToSaveResponse(this.customerService.createEvent(new CustomerEvent(this.customer, 'CUSTOMER_UPDATED')));
+            this.subscribeToSaveResponse(this.customerService.update(this.customer));
         } else {
-            this.customer.id = this.randomInt();
-            this.subscribeToSaveResponse(this.customerService.createEvent(new CustomerEvent(this.customer, 'CUSTOMER_CREATED')));
+            this.subscribeToSaveResponse(this.customerService.create(this.customer));
         }
     }
 

@@ -13,16 +13,11 @@ type EntityArrayResponseType = HttpResponse<ICustomer[]>;
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
     public resourceUrl = SERVER_API_URL + 'customers/api/customers';
-    public eventUrl = SERVER_API_URL + 'customers/api/events';
 
     constructor(private http: HttpClient) {}
 
     create(customer: ICustomer): Observable<EntityResponseType> {
         return this.http.post<ICustomer>(this.resourceUrl, customer, { observe: 'response' });
-    }
-
-    createEvent(event: CustomerEvent): Observable<HttpResponse<CustomerEvent>> {
-        return this.http.post<CustomerEvent>(`${this.eventUrl}/${event.event}`, event.customer, { observe: 'response' });
     }
 
     update(customer: ICustomer): Observable<EntityResponseType> {
