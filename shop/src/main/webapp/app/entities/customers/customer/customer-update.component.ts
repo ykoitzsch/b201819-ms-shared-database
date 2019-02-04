@@ -48,8 +48,4 @@ export class CustomerUpdateComponent implements OnInit {
     private onSaveError() {
         this.isSaving = false;
     }
-
-    private randomInt() {
-        return Math.floor(Math.random() * (10000 - 1 + 1)) + 1;
-    }
 }

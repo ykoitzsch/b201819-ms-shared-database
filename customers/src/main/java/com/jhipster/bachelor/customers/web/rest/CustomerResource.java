@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,8 +39,11 @@ public class CustomerResource {
 
   private CustomerService customerService;
 
-  public CustomerResource(CustomerService customerService) {
+  private JdbcTemplate jdbcTemplate;
+
+  public CustomerResource(CustomerService customerService, JdbcTemplate jdbcTemplate) {
     this.customerService = customerService;
+    this.jdbcTemplate = jdbcTemplate;
   }
 
   /**
@@ -92,6 +96,8 @@ public class CustomerResource {
   @Timed
   public List<Customer> getAllCustomers() throws InterruptedException, ExecutionException {
     log.debug("REST request to get all Customers");
+    String result = jdbcTemplate.queryForObject("SELECT NAME FROM PRODUCT WHERE ID = :id ", String.class);
+    log.info("~~~~~~~~~~~~~~ result : " + result);
     return customerService.findAll();
   }
 
