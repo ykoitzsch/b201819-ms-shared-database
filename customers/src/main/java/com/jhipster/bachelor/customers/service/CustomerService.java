@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jhipster.bachelor.customers.domain.Basket;
 import com.jhipster.bachelor.customers.domain.Customer;
+import com.jhipster.bachelor.customers.repository.BasketRepository;
 import com.jhipster.bachelor.customers.repository.CustomerRepository;
 
 /**
@@ -22,8 +24,11 @@ public class CustomerService {
 
   private CustomerRepository customerRepository;
 
-  public CustomerService(CustomerRepository customerRepository) {
+  private BasketRepository basketRepository;
+
+  public CustomerService(CustomerRepository customerRepository, BasketRepository basketRepository) {
     this.customerRepository = customerRepository;
+    this.basketRepository = basketRepository;
 
   }
 
@@ -35,7 +40,12 @@ public class CustomerService {
    */
   public Customer save(Customer customer) {
     log.debug("Request to save Customer : {}", customer);
-    return customerRepository.save(customer);
+    Customer c = customerRepository.save(customer);
+    Basket basket = new Basket();
+    basket.setId(c.getId());
+    basket.setCustomerId(c.getId());
+    basketRepository.save(basket);
+    return c;
   }
 
   /**

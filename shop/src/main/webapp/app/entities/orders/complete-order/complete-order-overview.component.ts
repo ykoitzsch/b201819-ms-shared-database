@@ -33,7 +33,6 @@ export class CompleteOrderOverviewComponent implements OnInit, OnDestroy {
         private eventManager: JhiEventManager,
         private principal: Principal,
         private productService: ProductService,
-        private invoiceService: InvoiceService,
         private accountService: AccountService
     ) {}
 
@@ -66,55 +65,28 @@ export class CompleteOrderOverviewComponent implements OnInit, OnDestroy {
     }
 
     getProduct(productId) {
+        console.log(productId);
         for (const p of this.products) {
             if (p.id === productId) {
+                console.log(p);
                 return p;
             }
         }
     }
 
     payNow(order) {
-        this.invoice = new Invoice();
-        this.invoice.amount = order.totalPrice;
-        this.invoice.code = this.generateInvoiceCode();
-        this.invoice.customerId = order.customerId;
-        this.invoice.dueDate = this.calculateDueDate();
-        this.invoice.orderId = order.id;
-        this.invoice.paymentDate = new Date().toDateString();
-        this.invoice.status = InvoiceStatus.PAID;
-        this.invoiceService.create(this.invoice).subscribe(
-            (res: HttpResponse<Invoice>) => {
-                order.status = OrderStatus.COMPLETED;
-                order.invoiceId = res.body.id;
-                this.completeOrderService.update(order).subscribe(
-                    (r: HttpResponse<ICompleteOrder>) => {
-                        this.jhiAlertService.success('Order with order number ' + this.generateOrderNo(order) + ' has been paid');
-                    },
-                    (r: HttpErrorResponse) => {
-                        this.jhiAlertService.error(res.status + r.error, null, null);
-                        order.status = OrderStatus.PENDING;
-                    }
-                );
+        order.status = OrderStatus.COMPLETED;
+        this.completeOrderService.update(order).subscribe(
+            (r: HttpResponse<ICompleteOrder>) => {
+                this.jhiAlertService.success('Order has been paid');
             },
-            (res: HttpErrorResponse) => {
-                this.jhiAlertService.error(res.error);
+            (r: HttpErrorResponse) => {
+                this.jhiAlertService.error(r.error, null, null);
+                order.status = OrderStatus.PENDING;
             }
-        );
+        )
     }
 
-    generateInvoiceCode(): string {
-        return 'xxxxxxxx'.replace(/[xy]/g, char => {
-            const random = Math.random() * 16;
-            const value = char === 'x' ? random : random % 4 + 8;
-            return value.toString(7);
-        });
-    }
-
-    calculateDueDate() {
-        const date = new Date();
-        date.setMonth(date.getMonth() + 1);
-        return date.toDateString();
-    }
     hide(order) {
         this.completeOrders.splice(this.completeOrders.indexOf(order), 1);
     }

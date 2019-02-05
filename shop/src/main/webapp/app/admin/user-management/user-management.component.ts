@@ -87,7 +87,6 @@ export class UserMgmtComponent implements OnInit, OnDestroy {
                         (res: HttpErrorResponse) => {
                             if (res.status === 404) {
                                 this.customerService.create(new Customer(user.id, user.login, user.email, '')).subscribe();
-                                this.basketService.create(new Basket(user.id, user.id, null)).subscribe();
                             }
                         }
                     );

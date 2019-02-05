@@ -31,7 +31,6 @@ spring:
         active: dev
         include:
             - swagger
-            - no-liquibase
             # Uncomment to activate TLS for the dev profile
             #- tls
     devtools:
@@ -43,7 +42,7 @@ spring:
         serialization.indent_output: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:h2:tcp://localhost:9090/mem:jhipster
+        url: jdbc:h2:mem:jhipster;
         username: sd
         password:
         hikari:
@@ -51,6 +50,8 @@ spring:
     h2:
         console:
             enabled: false
+    liquidbase:
+        contexts: dev
     jpa:
         database-platform: io.github.jhipster.domain.util.FixedH2Dialect
         database: H2
