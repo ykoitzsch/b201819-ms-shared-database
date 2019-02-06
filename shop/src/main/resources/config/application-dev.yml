@@ -42,7 +42,7 @@ spring:
         serialization.indent_output: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:h2:mem:jhipster;
+        url: jdbc:h2:mem:jhipster;DB_CLOSE_DELAY=-1
         username: sd
         password:
         hikari:

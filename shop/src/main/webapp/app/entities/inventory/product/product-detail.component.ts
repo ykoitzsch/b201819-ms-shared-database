@@ -45,7 +45,7 @@ export class ProductDetailComponent implements OnInit {
             this.currentRating = 0;
             this.customerRatedAlready = false;
             this.ratingSubmitButtonActive = false;
-            this.ratings = [];
+            this.ratings = product.ratings;
         });
 
         this.accountService.get().subscribe(response => {
@@ -53,7 +53,6 @@ export class ProductDetailComponent implements OnInit {
                 this.account = response.body;
             }
         });
-        this.loadRatings();
     }
 
     previousState() {
@@ -88,7 +87,7 @@ export class ProductDetailComponent implements OnInit {
 
     calculateRating() {
         this.currentRating = 0;
-        for (const r of this.ratings) {
+        for (const r of this.product.ratings) {
             this.currentRating = this.currentRating + r.points;
         }
         this.currentRating = +Number(this.currentRating / this.ratings.length).toFixed(2);
@@ -96,9 +95,9 @@ export class ProductDetailComponent implements OnInit {
 
     rate(points, desc) {
         if (!this.ratingExists()) {
-            this.ratingService.create(new Rating(null, points, this.product.id, +this.account.id, desc)).subscribe(
+            this.ratingService.create(new Rating(null, points, this.product.productId, +this.account.id, desc)).subscribe(
                 (res: HttpResponse<Rating>) => {
-                    this.ratings.push(res.body);
+                    this.product.ratings.push(res.body);
                     this.calculateRating();
                     this.customerRatedAlready = true;
                 },
@@ -111,25 +110,12 @@ export class ProductDetailComponent implements OnInit {
         }
     }
     ratingExists() {
-        for (const r of this.ratings) {
+        for (const r of this.product.ratings) {
             if (r.customerId === +this.account.id) {
                 this.customerRatedAlready = true;
                 return true;
             }
         }
         return false;
-    }
-
-    loadRatings() {
-        this.ratingService.query({ productId: this.product.id }).subscribe(
-            (res: HttpResponse<Rating[]>) => {
-                this.ratings = res.body;
-                this.calculateRating();
-                this.ratingExists();
-            },
-            (res: HttpErrorResponse) => {
-                this.jhiAlertService.error('Rating Service is at the moment not available');
-            }
-        );
     }
 }

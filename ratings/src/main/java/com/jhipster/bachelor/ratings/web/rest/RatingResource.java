@@ -9,9 +9,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.MessageChannel;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,11 +41,8 @@ public class RatingResource {
 
   private RatingService ratingService;
 
-  private MessageChannel channel;
-
-  public RatingResource(RatingService ratingService, Processor processor) {
+  public RatingResource(RatingService ratingService) {
     this.ratingService = ratingService;
-    this.channel = processor.output();
   }
 
   /**
