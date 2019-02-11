@@ -3,13 +3,13 @@ package com.jhipster.bachelor.orders.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.jhipster.bachelor.orders.domain.ProductOrder;
+import com.jhipster.bachelor.orders.domain.Product;
 
 /**
- * Spring Data repository for the ProductOrder entity.
+ * Spring Data repository for the Product entity.
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
 }

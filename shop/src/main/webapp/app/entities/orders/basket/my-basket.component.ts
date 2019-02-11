@@ -1,4 +1,6 @@
-import { User } from './../../../core/user/user.model';
+import { ProductOrderDto } from './../../../shared/model/orders/productOrderDto.model';
+import { ProductOrderService } from '../product-order/product-order.service';
+import { User } from '../../../core/user/user.model';
 import { Subscription } from 'rxjs';
 import { AccountService, Principal } from 'app/core';
 import { CompleteOrderService } from '../complete-order/complete-order.service';
@@ -33,13 +35,13 @@ class ProductDto {
 })
 export class MyBasketComponent implements OnInit {
     basket: IBasket;
-    products: ProductDto[] = [];
+    productOrders: ProductOrderDto[] = [];
     totalProducts: number;
     totalPrice: number;
     currentUser: User;
 
     constructor(
-        private productService: ProductService,
+        private productOrderService: ProductOrderService,
         private jhiAlertService: JhiAlertService,
         private basketService: BasketService,
         private completeOrderService: CompleteOrderService,
@@ -49,16 +51,8 @@ export class MyBasketComponent implements OnInit {
     ngOnInit() {
         this.accountService.get().subscribe(
             (res: HttpResponse<User>) => {
-                this.basketService.find(res.body.id).subscribe(
-                    (r: HttpResponse<IBasket>) => {
-                        this.basket = r.body;
-                        this.loadAllProducts();
-                    },
-                    (r: HttpErrorResponse) => this.jhiAlertService.error(r.message)
-                );
-            },
-            (res: HttpErrorResponse) => this.jhiAlertService.error(res.message)
-        );
+                this.loadAllProducts(res.body.id);
+            });
     }
 
     previousState() {
@@ -66,7 +60,7 @@ export class MyBasketComponent implements OnInit {
     }
 
     orderNow() {
-        if (this.products.length > 0) {
+        if (this.productOrders.length > 0) {
             this.completeOrderService
                 .create(
                     new CompleteOrder(
@@ -81,7 +75,7 @@ export class MyBasketComponent implements OnInit {
                 )
                 .subscribe(
                     (res: HttpResponse<CompleteOrder>) => {
-                        this.products = [];
+                        this.productOrders = [];
                         this.totalProducts = 0;
                         this.totalPrice = 0.0;
                     },
@@ -92,46 +86,32 @@ export class MyBasketComponent implements OnInit {
         }
     }
 
-    loadAllProducts() {
+
+    loadAllProducts(id) {
         this.totalProducts = 0;
         this.totalPrice = 0.0;
-        for (const productOrder of this.basket.productOrders) {
-            this.productService.find(productOrder.productId).subscribe(
-                (res: HttpResponse<Product>) => {
-                    const product = res.body;
-                    this.totalProducts = this.totalProducts + productOrder.amount;
-                    this.totalPrice = this.totalPrice + productOrder.amount * product.price;
-                    this.products.push(
-                        new ProductDto(
-                            productOrder.amount,
-                            product.name,
-                            product.price,
-                            product.image,
-                            product.description,
-                            product.productCategory.name,
-                            productOrder
-                        )
-                    );
-                },
-                (res: HttpErrorResponse) => {
-                    this.jhiAlertService.error(res.status + ': Could not load product with id ' + productOrder.productId);
+        this.productOrderService.findByCustomerId({ customerId: id }).subscribe(
+            (res: HttpResponse<ProductOrderDto[]>) => {
+                this.productOrders = res.body;
+                this.totalProducts = this.productOrders.length;
+                for(let order of this.productOrders) {
+                    this.totalPrice += order.price;
                 }
-            );
-        }
+            });
     }
 
-    remove(productDto) {
-        this.basket.productOrders.splice(this.basket.productOrders.indexOf(productDto.productOrder), 1);
-        this.basketService.update(this.basket).subscribe(
-            (res: HttpResponse<IBasket>) => {
-                this.products.splice(this.products.indexOf(productDto), 1);
-                this.jhiAlertService.success(productDto.name + ' has been removed from the basket');
-                this.totalProducts = this.totalProducts - productDto.amount;
-                this.totalPrice = this.totalPrice - productDto.amount * productDto.price;
+    remove(productOrder) {
+        this.productOrderService.delete(productOrder.id).subscribe(
+            (res: HttpResponse<ProductOrder>) => {
+                this.jhiAlertService.success(productOrder.name + ' has been removed from the basket');
+                this.productOrders.splice(this.productOrders.indexOf(productOrder), 1);
+                this.totalProducts = this.totalProducts - productOrder.amount;
+                this.totalPrice = this.totalPrice - productOrder.amount * productOrder.price;
             },
             (res: HttpErrorResponse) => {
-                this.jhiAlertService.error(res.status + ': Could not delete productOrder with id ' + productDto.productOrder.id);
+                this.jhiAlertService.error(res.status + ': Could not delete productOrder with id ' + productOrder.id);
             }
         );
     }
+
 }

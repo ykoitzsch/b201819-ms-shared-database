@@ -1,3 +1,4 @@
+import { ProductOrderService } from '../../orders/product-order/product-order.service';
 import { RatingService } from '../../ratings/rating/rating.service';
 import { Rating } from '../../../shared/model/ratings/rating.model';
 import { JhiAlertService } from 'ng-jhipster';
@@ -33,7 +34,8 @@ export class ProductDetailComponent implements OnInit {
         private accountService: AccountService,
         private basketService: BasketService,
         private jhiAlertService: JhiAlertService,
-        private ratingService: RatingService
+        private ratingService: RatingService,
+        private productOrderService: ProductOrderService,
     ) {}
 
     ngOnInit() {
@@ -60,21 +62,11 @@ export class ProductDetailComponent implements OnInit {
     }
 
     intoBasket(amount, product) {
-        this.basketService.find(+this.account.id).subscribe(
-            (res: HttpResponse<Basket>) => {
-                this.basket = res.body;
-                if (this.basket.productOrders === null) {
-                    this.basket.productOrders = [];
-                }
-                this.basket.productOrders.push(new ProductOrder(null, amount, +this.account.id, product.id, null, null));
-                this.basketService.update(this.basket).subscribe((r: HttpResponse<Basket>) => {
-                    this.jhiAlertService.success(amount + 'x ' + product.name + ' has successfully been added to your basket!');
-                });
-            },
-            (res: HttpErrorResponse) => {
-                this.jhiAlertService.error(res.status + ': No basket with id ' + this.account.id + ' found');
-            }
-        );
+        console.log(product);
+        this.productOrderService.create(new ProductOrder(null, amount, +this.account.id, product.productId, null, null)).subscribe(
+            (r: HttpResponse<Basket>) => {
+                this.jhiAlertService.success(amount + 'x ' + product.name + ' has successfully been added to your basket!');
+            });
     }
 
     textAreaEmpty() {

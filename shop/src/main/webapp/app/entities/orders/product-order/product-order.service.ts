@@ -1,3 +1,4 @@
+import { ProductOrderDto } from './../../../shared/model/orders/productOrderDto.model';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -12,6 +13,7 @@ type EntityArrayResponseType = HttpResponse<IProductOrder[]>;
 @Injectable({ providedIn: 'root' })
 export class ProductOrderService {
     public resourceUrl = SERVER_API_URL + 'orders/api/product-orders';
+    public filterResourceUrl = SERVER_API_URL + 'orders/api/filtered-product-orders';
 
     constructor(private http: HttpClient) {}
 
@@ -34,5 +36,9 @@ export class ProductOrderService {
 
     delete(id: number): Observable<HttpResponse<any>> {
         return this.http.delete<any>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    }
+
+    findByCustomerId(p?: any): Observable<EntityArrayResponseType> {
+        return this.http.get<ProductOrderDto[]>(this.filterResourceUrl, { params: p, observe: 'response' });
     }
 }
