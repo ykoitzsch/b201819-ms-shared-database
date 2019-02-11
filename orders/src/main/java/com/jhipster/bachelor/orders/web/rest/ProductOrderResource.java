@@ -115,6 +115,7 @@ public class ProductOrderResource {
       .findAll()
       .stream()
       .filter(r -> r.getCustomerId().equals(Long.valueOf(customerId)))
+      .filter(r -> r.getBasket() != null)
       .collect(Collectors.toList());
 
     List<ProductOrderDto> dtoList = new ArrayList<>();
