@@ -43,7 +43,6 @@ export class MyBasketComponent implements OnInit {
     constructor(
         private productOrderService: ProductOrderService,
         private jhiAlertService: JhiAlertService,
-        private basketService: BasketService,
         private completeOrderService: CompleteOrderService,
         private accountService: AccountService
     ) {}
@@ -51,6 +50,7 @@ export class MyBasketComponent implements OnInit {
     ngOnInit() {
         this.accountService.get().subscribe(
             (res: HttpResponse<User>) => {
+                this.currentUser = res.body;
                 this.loadAllProducts(res.body.id);
             });
     }
@@ -60,6 +60,7 @@ export class MyBasketComponent implements OnInit {
     }
 
     orderNow() {
+        console.log("sup");
         if (this.productOrders.length > 0) {
             this.completeOrderService
                 .create(
@@ -67,10 +68,10 @@ export class MyBasketComponent implements OnInit {
                         null,
                         null,
                         OrderStatus.PENDING,
-                        this.basket.customerId,
+                        this.currentUser.id,
                         this.totalPrice,
                         new Date(),
-                        this.basket.productOrders
+                        null
                     )
                 )
                 .subscribe(

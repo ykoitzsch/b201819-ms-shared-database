@@ -3,7 +3,9 @@ package com.jhipster.bachelor.orders.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jhipster.bachelor.orders.domain.Basket;
 import com.jhipster.bachelor.orders.domain.CompleteOrder;
 import com.jhipster.bachelor.orders.domain.Invoice;
+import com.jhipster.bachelor.orders.domain.ProductOrder;
 import com.jhipster.bachelor.orders.domain.enumeration.InvoiceStatus;
 import com.jhipster.bachelor.orders.domain.enumeration.OrderStatus;
 import com.jhipster.bachelor.orders.repository.BasketRepository;
@@ -67,8 +70,7 @@ public class CompleteOrderService {
       Invoice savedInvoice = invoiceRepository.save(i);
       completeOrder.setInvoiceId(savedInvoice.getId());
       return completeOrderRepository.save(completeOrder);
-    }
-    if (completeOrder.getId() == null) {
+    } else if (completeOrder.getId() == null) {
       log.debug("Request to save CompleteOrder : {}", completeOrder);
       CompleteOrder result;
       Optional<Basket> optBasket = basketRepository.findById(completeOrder.getCustomerId());
@@ -76,8 +78,14 @@ public class CompleteOrderService {
         Basket basket = optBasket.get();
         basket.getProductOrders().clear();
         this.basketRepository.save(basket); //clear basket
+        Set<ProductOrder> orders = this.productOrderService
+          .findAll()
+          .stream()
+          .filter(r -> r.getCustomerId().equals(completeOrder.getCustomerId()))
+          .collect(Collectors.toSet());
+        completeOrder.setProductOrders(orders);
         result = completeOrderRepository.save(completeOrder);
-        completeOrder.getProductOrders().forEach(p -> {
+        orders.forEach(p -> {
           p.setBasket(null);
           p.setCompleteOrder(completeOrder);
           this.productOrderService.save(p);
