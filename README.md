@@ -1,4 +1,4 @@
-# b201819-ms-event-sourcing
+# b201819-ms-shared-database
 
 This is an e-commerce application with a microservice-architecture and the shared-database pattern implemented.
 There are a total of 5 microservices which are: 
