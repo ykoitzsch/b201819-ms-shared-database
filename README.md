@@ -49,4 +49,4 @@ $ mvnw (or ./mvnw with linux)
 - Login (only possible after admin has activated the account)
 - Shop!
 
-
+The shared database can be looked up at http://localhost:8080/h2-console/
