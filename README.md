@@ -24,7 +24,7 @@ Start the registry
 $ cd jhipster-registry
 $ mvnw (or ./mvnw with linux)
 ```
-After the JHipster Registry is running you can start the API Gateway and the microservices. It is recommended to start the API Gateway first.
+After the JHipster Registry is running you can start the API Gateway and the microservices. It is recommended to start the API Gateway first. The first time running mvnw on the shop might fail. Just try again and it should work fine.
 ```sh
 $ cd shop
 $ mvnw (or ./mvnw with linux)
